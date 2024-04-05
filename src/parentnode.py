@@ -1,4 +1,5 @@
 from htmlnode import HTMLNode
+from leafnode import LeafNode
 
 class ParentNode(HTMLNode):
     def __init__(self, tag, children, props=None):
@@ -16,3 +17,5 @@ class ParentNode(HTMLNode):
             temp_string += self.children[i].to_html()
         
         return f"<{self.tag}>{temp_string}</{self.tag}>"
+
+        
