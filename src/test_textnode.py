@@ -32,6 +32,46 @@ class TestTextNode(unittest.TestCase):
         #print(f"node5: {node5}")
         #print(f"node4: {node4}")
         #self.assertEqual(node5, node4)
+        test_extract_text = "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ..png) and ![another](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png)"
+        print(extract_markdown_images(test_extract_text))
+        print(type(extract_markdown_images(test_extract_text)))
+
+        test_extract_images_text = "This is text with a [link](https://www.example.com) and [another](https://www.example.com/another)"
+        print(extract_markdown_links(test_extract_images_text))
+
+        node8 = TextNode(
+    "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and another ![second image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png)",
+    text_type_text,
+)
+        new_nodes = split_nodes_image(node8)
+        print(f"new_nodes: {new_nodes}")
+
+        node9 = TextNode("![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png)", text_type_text,)
+        new_nodes2 = split_nodes_image(node9)
+        print(f"new_nodes2: {new_nodes2}")
+
+        node10 = TextNode("no matches here", text_type_text,)
+        new_nodes3 = split_nodes_image(node10)
+        print(f"new_nodes3: {new_nodes3}")
+
+        node11 = TextNode(
+    "This is text with an [link](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and another [link](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png)",
+    text_type_text,
+)
+        new_nodes11 = split_nodes_link(node11)
+        print(f"new_nodes11: {new_nodes11}")
+
+        node12 = TextNode("[link](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png)", text_type_text,)
+        new_nodes12 = split_nodes_link(node12)
+        print(f"new_nodes12: {new_nodes12}")
+
+        node13 = TextNode("no matches here", text_type_text,)
+        new_nodes13 = split_nodes_image(node10)
+        print(f"new_nodes13: {new_nodes13}")
+
+
+
+
         
 if __name__ == "__main__":
     unittest.main()

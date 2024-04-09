@@ -1,3 +1,4 @@
+import re
 from leafnode import LeafNode
 
 text_type_text = "text"
@@ -76,6 +77,75 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 else:
                     new_list_nodes.append(TextNode(working_node[w_node],text_type_text,None))
 
+    return new_list_nodes
 
+def extract_markdown_images(text):
+    return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+
+def extract_markdown_links(text):
+    return re.findall(r"\[(.*?)\]\((.*?)\)", text)
+
+def split_nodes_image(old_nodes):
+    matches = extract_markdown_images(old_nodes.text)
+    if not matches:
+        return old_nodes
+    new_list_nodes = []
+    splits = len(matches)
+    if splits >= 1:
+        working_node = old_nodes.text.split(f"![{matches[0][0]}]({matches[0][1]})", 1)
+
+        #node gets text broken into 3 parts here:
+        #part 1 - before first match, will be a text_type
+        #part 2 - the match, will be image type
+        #part 3 - everything after the first match, text_type for the recursive call
+
+        #part 1
+        if working_node[0] == "":
+            pass
+        else:
+            new_list_nodes.append(TextNode(working_node[0],text_type_text, None))
+
+        #part 2 - the actual image
+        new_list_nodes.append(TextNode(matches[0][0],text_type_image,matches[0][1]))
+
+        #part 3 - peaking ahead to see if there is anything there
+        if not working_node[1]:
+            return new_list_nodes
+        else:
+            temp_node = TextNode(working_node[1],text_type_text)
+            new_list_nodes.append(split_nodes_image(temp_node))
+
+    return new_list_nodes
+
+
+def split_nodes_link(old_nodes):
+    matches = extract_markdown_links(old_nodes.text)
+    if not matches:
+        return old_nodes
+    new_list_nodes = []
+    splits = len(matches)
+    if splits >= 1:
+        working_node = old_nodes.text.split(f"[{matches[0][0]}]({matches[0][1]})", 1)
+
+        #same as split nodes image, node gets text broken into 3 parts here:
+        #part 1 - before first match, will be a text_type
+        #part 2 - the match, will be link type
+        #part 3 - everything after the first match, text_type for the recursive call
+
+        #part 1
+        if working_node[0] == "":
+            pass
+        else:
+            new_list_nodes.append(TextNode(working_node[0],text_type_text, None))
+
+        #part 2 - the actual link
+        new_list_nodes.append(TextNode(matches[0][0],text_type_link,matches[0][1]))
+
+        #part 3 - peaking ahead to see if there is anything for a recursive call
+        if not working_node[1]:
+            return new_list_nodes
+        else:
+            temp_node = TextNode(working_node[1],text_type_text)
+            new_list_nodes.append(split_nodes_image(temp_node))
 
     return new_list_nodes
