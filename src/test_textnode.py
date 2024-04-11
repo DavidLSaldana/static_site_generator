@@ -43,32 +43,36 @@ class TestTextNode(unittest.TestCase):
     "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and another ![second image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png)",
     text_type_text,
 )
-        new_nodes = split_nodes_image(node8)
-        print(f"new_nodes: {new_nodes}")
+        #new_nodes = list(map(split_nodes_image, [node8]))
+        #print(f"new_nodes: {new_nodes}")
 
-        node9 = TextNode("![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png)", text_type_text,)
-        new_nodes2 = split_nodes_image(node9)
-        print(f"new_nodes2: {new_nodes2}")
+        #node9 = TextNode("![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png)", text_type_text,)
+        #new_nodes2 = list(map(split_nodes_image, [node9]))
+        #print(f"new_nodes2: {new_nodes2}")
 
-        node10 = TextNode("no matches here", text_type_text,)
-        new_nodes3 = split_nodes_image(node10)
-        print(f"new_nodes3: {new_nodes3}")
+        #node10 = TextNode("no matches here", text_type_text,)
+        #new_nodes3 = list(map(split_nodes_image, [node10]))
+        #print(f"new_nodes3: {new_nodes3}")
 
         node11 = TextNode(
     "This is text with an [link](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and another [link](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png)",
     text_type_text,
 )
-        new_nodes11 = split_nodes_link(node11)
-        print(f"new_nodes11: {new_nodes11}")
+        #new_nodes11 = list( map(split_nodes_link, [node11]))
+        #print(f"new_nodes11: {new_nodes11}")
 
         node12 = TextNode("[link](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png)", text_type_text,)
-        new_nodes12 = split_nodes_link(node12)
+        new_nodes12 = split_nodes_link([node12])
         print(f"new_nodes12: {new_nodes12}")
 
-        node13 = TextNode("no matches here", text_type_text,)
-        new_nodes13 = split_nodes_image(node10)
-        print(f"new_nodes13: {new_nodes13}")
+        #node13 = TextNode("no matches here", text_type_text,None)
+        #new_nodes13 = list(map(split_nodes_image, [node10]))
+        #print(f"new_nodes13: {new_nodes13}")
 
+        text = "This is **text** with an *italic* word and a `code block` and an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and a [link](https://boot.dev)"
+
+        print("Printing text to text nodes:")
+        print(text_to_text_nodes(text))
 
 
 

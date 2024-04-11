@@ -50,6 +50,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     #takes list of old nodes, a delimiter, and a text type
     #returns a new list of nodes where any "text" type are
     #potentially split based on syntax
+    
     new_text_type = ""
     new_list_nodes = []
     if delimiter == code_delimit:
@@ -62,7 +63,6 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     temp_func = lambda delimit: delimit.text.split(delimiter)
 
     for node in old_nodes:
-        
         if not node.text_type == text_type_text:
             new_list_nodes.append(node)
         else:
@@ -76,7 +76,6 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                     new_list_nodes.append(TextNode(working_node[w_node],new_text_type,None))
                 else:
                     new_list_nodes.append(TextNode(working_node[w_node],text_type_text,None))
-
     return new_list_nodes
 
 def extract_markdown_images(text):
@@ -86,66 +85,89 @@ def extract_markdown_links(text):
     return re.findall(r"\[(.*?)\]\((.*?)\)", text)
 
 def split_nodes_image(old_nodes):
-    matches = extract_markdown_images(old_nodes.text)
-    if not matches:
-        return old_nodes
-    new_list_nodes = []
-    splits = len(matches)
-    if splits >= 1:
-        working_node = old_nodes.text.split(f"![{matches[0][0]}]({matches[0][1]})", 1)
+    nodes_list_updated = []
+    print(f"old_nodes at the start of image: {old_nodes}")
 
-        #node gets text broken into 3 parts here:
+    #old_nodes comes in, need to check each node in the list
+    for node in old_nodes:
+        matches = extract_markdown_images(node.text)
+        num_matches = len(matches)
+        if not matches:
+            nodes_list_updated.append(node)
+        else:
+            working_node = node.text.split(f"![{matches[0][0]}]({matches[0][1]})")
+        #node gets text broken into 3 parts:
         #part 1 - before first match, will be a text_type
         #part 2 - the match, will be image type
-        #part 3 - everything after the first match, text_type for the recursive call
+        #part 3 - everything after the first match, new matches will be caught by the for loop
 
-        #part 1
-        if working_node[0] == "":
-            pass
-        else:
-            new_list_nodes.append(TextNode(working_node[0],text_type_text, None))
+            for match in range(0, num_matches):
 
-        #part 2 - the actual image
-        new_list_nodes.append(TextNode(matches[0][0],text_type_image,matches[0][1]))
+                #part 1
+                if working_node[match] == "":
+                    pass
+                else:
+                    nodes_list_updated.append(TextNode(working_node[match],text_type_text, None))
 
-        #part 3 - peaking ahead to see if there is anything there
-        if not working_node[1]:
-            return new_list_nodes
-        else:
-            temp_node = TextNode(working_node[1],text_type_text)
-            new_list_nodes.append(split_nodes_image(temp_node))
+                #part 2 - the actual link
+                nodes_list_updated.append(TextNode(matches[match][0],text_type_image,matches[match][1]))
 
-    return new_list_nodes
-
+                #part 3 - needs to reevaluate the match to see if there are more matches
+                if match == num_matches - 1:
+                    if working_node[match+1] == "":
+                        pass
+                    else:
+                        nodes_list_updated.append(TextNode(working_node[match+1],text_type_text, None))   
+    return nodes_list_updated
 
 def split_nodes_link(old_nodes):
-    matches = extract_markdown_links(old_nodes.text)
-    if not matches:
-        return old_nodes
-    new_list_nodes = []
-    splits = len(matches)
-    if splits >= 1:
-        working_node = old_nodes.text.split(f"[{matches[0][0]}]({matches[0][1]})", 1)
+    nodes_list_updated = []
 
-        #same as split nodes image, node gets text broken into 3 parts here:
+    #old_nodes comes in, need to check each node in the list
+    for node in old_nodes:
+        matches = extract_markdown_links(node.text)
+        num_matches = len(matches)
+        if not matches:
+            nodes_list_updated.append(node)
+        else:
+            working_node = node.text.split(f"[{matches[0][0]}]({matches[0][1]})")
+
+        #node gets text broken into 3 parts:
         #part 1 - before first match, will be a text_type
         #part 2 - the match, will be link type
-        #part 3 - everything after the first match, text_type for the recursive call
+        #part 3 - everything after the first match, new matches will be caught by the for loop
+            for match in range(0, num_matches):
 
-        #part 1
-        if working_node[0] == "":
-            pass
-        else:
-            new_list_nodes.append(TextNode(working_node[0],text_type_text, None))
+                #part 1
+                if working_node[match] == "":
+                    pass
+                else:
+                    nodes_list_updated.append(TextNode(working_node[match],text_type_text, None))
 
-        #part 2 - the actual link
-        new_list_nodes.append(TextNode(matches[0][0],text_type_link,matches[0][1]))
+                #part 2 - the actual link
+                nodes_list_updated.append(TextNode(matches[match][0],text_type_link,matches[match][1]))
 
-        #part 3 - peaking ahead to see if there is anything for a recursive call
-        if not working_node[1]:
-            return new_list_nodes
-        else:
-            temp_node = TextNode(working_node[1],text_type_text)
-            new_list_nodes.append(split_nodes_image(temp_node))
+                #part 3 - needs to reevaluate the match to see if there are more matches
+                if match == num_matches - 1:
+                    if working_node[match+1] == "":
+                        pass
+                    else:
+                        nodes_list_updated.append(TextNode(working_node[match+1],text_type_text, None))   
+    return nodes_list_updated
 
-    return new_list_nodes
+def text_to_text_nodes(text):
+    list_of_new_nodes = []
+    temp_node = TextNode(text,text_type_text,None)
+    list_of_new_nodes = split_nodes_delimiter([temp_node],"**",text_type_text)
+    list_of_new_nodes = split_nodes_delimiter(list_of_new_nodes,"*",text_type_text)
+    list_of_new_nodes = split_nodes_delimiter(list_of_new_nodes,"`",text_type_text)
+    list_of_new_nodes = split_nodes_image(list_of_new_nodes)
+    list_of_new_nodes = split_nodes_link(list_of_new_nodes)
+    return list_of_new_nodes
+
+def markdown_to_blocks(markdown):
+    split_contents = markdown.split("\n")
+    result = []
+    #will use filter to remove empty lines
+    #will use strip to remove spaces from start of lines
+    rem_whitespace = lambda content: content.strip()
