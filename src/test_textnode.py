@@ -75,7 +75,6 @@ class TestTextNode(unittest.TestCase):
         print(text_to_text_nodes(text))
 
 
-
         
 if __name__ == "__main__":
     unittest.main()

@@ -164,10 +164,3 @@ def text_to_text_nodes(text):
     list_of_new_nodes = split_nodes_image(list_of_new_nodes)
     list_of_new_nodes = split_nodes_link(list_of_new_nodes)
     return list_of_new_nodes
-
-def markdown_to_blocks(markdown):
-    split_contents = markdown.split("\n")
-    result = []
-    #will use filter to remove empty lines
-    #will use strip to remove spaces from start of lines
-    rem_whitespace = lambda content: content.strip()
